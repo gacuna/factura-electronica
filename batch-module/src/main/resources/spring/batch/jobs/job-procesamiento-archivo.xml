@@ -1,0 +1,67 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:p="http://www.springframework.org/schema/p" 
+	xmlns:batch="http://www.springframework.org/schema/batch" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xsi:schemaLocation="http://www.springframework.org/schema/batch
+		http://www.springframework.org/schema/batch/spring-batch-2.2.xsd
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+	">
+
+	<context:annotation-config />
+	<context:component-scan base-package="ar.com.pagofacil" />
+	
+	<import resource="../config/context.xml" />
+	<import resource="../config/database.xml" />
+
+	<batch:job id="procearArchivoJob">
+		<batch:step id="step1">
+			<batch:tasklet>
+				<batch:chunk reader="csvFileItemReader" writer="xmlItemWriter" commit-interval="10"/>
+<!-- 				<batch:chunk reader="csvFileItemReader" writer="xmlItemWriter" processor="itemProcessor" commit-interval="10"/> -->
+			</batch:tasklet>
+		</batch:step>
+	</batch:job>
+
+	<bean id="csvFileItemReader" class="ar.com.pagofacil.batch.MultiLineItemReader">
+		<property name="delegate">
+			<bean class="org.springframework.batch.item.file.FlatFileItemReader">
+ 	           <property name="resource" value="classpath:input/FE.txt" />
+    	       	<property name="lineMapper">
+        	       	<bean class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+                    	<property name="lineTokenizer" ref="recordTypeFileTokenizer"/>
+                    	<property name="fieldSetMapper">
+                        	<bean class="org.springframework.batch.item.file.mapping.PassThroughFieldSetMapper" />
+                    	</property>
+            	    </bean>
+            	</property>
+        	</bean>
+		</property>
+	</bean>
+
+	<bean id="recordTypeFileTokenizer" class="org.springframework.batch.item.file.transform.PatternMatchingCompositeLineTokenizer">
+	    <property name="tokenizers">
+	        <map>
+	            <entry key="*" value-ref="delimitedTokenizer" />
+	        </map>
+	    </property>
+	</bean>
+		 
+	<bean id="delimitedTokenizer" class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer" p:delimiter=";"/>
+		
+	<bean id="xmlItemWriter" class="org.springframework.batch.item.xml.StaxEventItemWriter">
+		<property name="resource" value="file:xml/outputs/report.xml" />
+		<property name="marshaller" ref="reportMarshaller" />
+		<property name="rootTagName" value="vendedor" />
+	</bean>
+
+	<bean id="reportMarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+		<property name="classesToBeBound">
+			<list>
+				<value>ar.com.pagofacil.batch.model.Vendedor</value>
+			</list>
+		</property>
+	</bean>
+
+</beans>
