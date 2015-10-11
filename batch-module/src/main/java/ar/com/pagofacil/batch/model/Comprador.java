@@ -4,29 +4,64 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "comprador")
+@Entity
+@Table(name="Comprador")
 public class Comprador implements Serializable {
 
 	private static final long serialVersionUID = 3645141440589838268L;
 
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	@Column(name="comprador_id")
+	private Long id;
+	
 	private Long cuit;
+	
 	private String razonSocial;
+	
 	private String domicilio;
+	
 	private String localidad;
+	
 	private String telefono;
+	
 	private String codigoPostal;
+	
 	private String pais;
+	
 	private String categoriaAfip;
+	
 	private Long numeroCliente;
+	
 	private Character tipoEntidad;
+	
+	@Transient
 	private List<String> mails = new ArrayList<>();
+	
 	private Integer cantidadMailsAProcesar;
+	
+	@OneToMany(mappedBy="comprador", cascade=CascadeType.ALL)
 	private List<Comprobante> comprobantes = new ArrayList<>();
+	
 	private Integer cantidadComprobantesAProcesar;
 
+	@ManyToOne
+	@JoinColumn(name="vendedor_id")
+	private Vendedor vendedor;
+	
 	public Long getCuit() {
 		return cuit;
 	}
@@ -140,4 +175,13 @@ public class Comprador implements Serializable {
 		this.cantidadComprobantesAProcesar = cantidadComprobantesAProcesar;
 	}
 
+	// No se setea al parsear el archivo
+	public Vendedor getVendedor() {
+		return vendedor;
+	}
+
+	public void setVendedor(Vendedor vendedor) {
+		this.vendedor = vendedor;
+	}
+	
 }

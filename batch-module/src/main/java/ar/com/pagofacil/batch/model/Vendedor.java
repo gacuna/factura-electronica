@@ -4,20 +4,41 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
-@XmlRootElement(name = "record")
+@Entity
+@Table(name="Vendedor")
 public class Vendedor implements Serializable {
 	
 	private static final long serialVersionUID = 3485112577323297821L;
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name="vendedor_id", nullable=false, unique=true)
+	private Long id;
+	
 	private Long cuit;
+	
 	private String nombre;
+	
 	private String domicilio;
+	
 	private String localidad;
+	
 	private String codigoPostal;
+	
 	private String pais;
+	
 	private int cantidadCompradores;
+	
+	@OneToMany(mappedBy="vendedor", cascade=CascadeType.ALL)
 	private List<Comprador> compradores = new ArrayList<Comprador>();
 
 	public Long getCuit() {

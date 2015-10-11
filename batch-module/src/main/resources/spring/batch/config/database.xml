@@ -14,9 +14,32 @@
 		<property name="username" value="root" />
 		<property name="password" value="root" />
 	</bean>
-
-	<bean id="transactionManager"
-		class="org.springframework.batch.support.transaction.ResourcelessTransactionManager" />
+	
+	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager" >
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+	
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="annotatedClasses">
+            <list>
+                <value>ar.com.pagofacil.batch.model.Vendedor</value>
+                <value>ar.com.pagofacil.batch.model.Comprador</value>
+                <value>ar.com.pagofacil.batch.model.Comprobante</value>
+                <value>ar.com.pagofacil.batch.model.Jurisdiccion</value>
+                <value>ar.com.pagofacil.batch.model.Impuesto</value>
+                <value>ar.com.pagofacil.batch.model.TotalJurisdiccion</value>
+                <value>ar.com.pagofacil.batch.model.TotalImpuesto</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+        	<props>
+	        	<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+	        	<prop key="hibernate.hbm2ddl.auto">create</prop>
+	        	<prop key="hibernate.show_sql">true</prop>
+        	</props>
+        </property>
+    </bean>
 	
 	<!-- create job-meta tables automatically -->
 	<jdbc:initialize-database data-source="dataSource">

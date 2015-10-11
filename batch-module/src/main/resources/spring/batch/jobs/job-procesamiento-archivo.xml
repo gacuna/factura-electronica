@@ -18,8 +18,8 @@
 	<batch:job id="procearArchivoJob">
 		<batch:step id="step1">
 			<batch:tasklet>
-<!-- 				<batch:chunk reader="csvFileItemReader" writer="xmlItemWriter" commit-interval="10"/> -->
-				<batch:chunk reader="csvFileItemReader" writer="xmlItemWriter" processor="itemProcessor" commit-interval="10"/>
+				<batch:chunk reader="csvFileItemReader" writer="dbWriter" commit-interval="1"/>
+<!-- 				<batch:chunk reader="csvFileItemReader" writer="xmlItemWriter" processor="itemProcessor" commit-interval="10"/> -->
 			</batch:tasklet>
 		</batch:step>
 	</batch:job>
@@ -49,7 +49,12 @@
 	</bean>
 		 
 	<bean id="delimitedTokenizer" class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer" p:delimiter=";"/>
-		
+
+	<bean id="dbWriter" class="org.springframework.batch.item.database.HibernateItemWriter">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+	<!-- 		
 	<bean id="xmlItemWriter" class="org.springframework.batch.item.xml.StaxEventItemWriter">
 		<property name="resource" value="file:xml/outputs/report.xml" />
 		<property name="marshaller" ref="reportMarshaller" />
@@ -63,5 +68,6 @@
 			</list>
 		</property>
 	</bean>
-
+ 	-->
+ 	
 </beans>

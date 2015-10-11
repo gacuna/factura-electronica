@@ -4,31 +4,87 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+@Entity
+@Table(name="Comprobante")
 public class Comprobante implements Serializable {
 
 	private static final long serialVersionUID = 2115214912257474433L;
 
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	@Column(name="comprobante_id", unique=true)
+	private Long id;
+	
 	private String idInterno;
+	
 	private String puntoVenta;
+	
 	private String tipoComprobante;
+	
 	private Character letraFactura;
+	
 	private String fechaFactura;
+	
 	private String fechaVencimiento;
+	
 	private String condicionPago;
+	
 	private String moneda;
+	
 	private Double tipoCambio;
+	
 	private Double totalComprobante;
+	
 	private Double gravado;
+	
 	private Double noGravado;
+	
 	private Double descuento;
+	
 	private Double montoIVADF;
+	
 	private Double percepcionesIVA;
+	
 	private Double percepcionesIIBB;
+	
 	private Double redondeo;
+	
+	@OneToMany(mappedBy="comprobante", cascade=CascadeType.ALL)
 	private List<Jurisdiccion> jurisdicciones = new ArrayList<Jurisdiccion>();
+	
+	@OneToOne(mappedBy="comprobante", cascade=CascadeType.ALL)
 	private TotalJurisdiccion totalJurisdiccion;
+	
+	@OneToMany(mappedBy="comprobante", cascade=CascadeType.ALL)
 	private List<Impuesto> impuestos = new ArrayList<Impuesto>();
+	
+	@OneToOne(mappedBy="comprobante", cascade=CascadeType.ALL)
 	private TotalImpuesto totalImpuesto;
+
+	@ManyToOne
+	@JoinColumn(name="comprador_id")
+	private Comprador comprador;
+	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public String getIdInterno() {
 		return idInterno;
@@ -196,6 +252,14 @@ public class Comprobante implements Serializable {
 
 	public void setTotalImpuesto(TotalImpuesto totalImpuesto) {
 		this.totalImpuesto = totalImpuesto;
+	}
+
+	public Comprador getComprador() {
+		return comprador;
+	}
+
+	public void setComprador(Comprador comprador) {
+		this.comprador = comprador;
 	}
 
 }

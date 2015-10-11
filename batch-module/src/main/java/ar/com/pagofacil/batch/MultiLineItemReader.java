@@ -58,6 +58,7 @@ public class MultiLineItemReader implements ItemReader<Vendedor>, ItemStream {
 				comprador.setCategoriaAfip(line.readString(8));
 				comprador.setNumeroCliente(line.readLong(9));
 				comprador.setTipoEntidad(line.readChar(10));
+				comprador.setVendedor(vendedor);
 				
 				compradores.add(comprador);
 			} else if (prefix.equals("03")) { //Mails Comprador
@@ -89,7 +90,10 @@ public class MultiLineItemReader implements ItemReader<Vendedor>, ItemStream {
 				comprobante.setRedondeo(line.readDouble(16));
 
 				Comprador comprador = getCompradorActual(compradores);
+				
 				comprador.getComprobantes().add(comprobante);
+
+				comprobante.setComprador(comprador);
 				
 			} else if (prefix.equals("05")) { //Jurisdiccion
 				Jurisdiccion jurisdiccion = new Jurisdiccion();
@@ -103,7 +107,9 @@ public class MultiLineItemReader implements ItemReader<Vendedor>, ItemStream {
 				Comprador comprador = getCompradorActual(compradores);
 				Comprobante comprobante = getComprobanteActual(comprador);
 				comprobante.getJurisdicciones().add(jurisdiccion);
-					
+				
+				jurisdiccion.setComprobante(comprobante);
+				
 			} else if (prefix.equals("95")) { //Total Jurisdiccion
 				Comprador comprador = getCompradorActual(compradores);
 				Comprobante comprobante = getComprobanteActual(comprador);
@@ -111,6 +117,8 @@ public class MultiLineItemReader implements ItemReader<Vendedor>, ItemStream {
 				TotalJurisdiccion total = new TotalJurisdiccion();
 				total.setCantidadAProcesar(line.readInt(1));
 				total.setTotal(line.readDouble(2));
+				total.setComprobante(comprobante);
+				
 				comprobante.setTotalJurisdiccion(total);
 				
 			} else if (prefix.equals("06")) { //Impuesto
@@ -127,6 +135,8 @@ public class MultiLineItemReader implements ItemReader<Vendedor>, ItemStream {
 				Comprobante comprobante = getComprobanteActual(comprador);
 				comprobante.getImpuestos().add(impuesto);
 				
+				impuesto.setComprobante(comprobante);
+				
 			} else if (prefix.equals("96")) { //Total Impuesto
 				Comprador comprador = getCompradorActual(compradores);
 				Comprobante comprobante = getComprobanteActual(comprador);
@@ -134,6 +144,8 @@ public class MultiLineItemReader implements ItemReader<Vendedor>, ItemStream {
 				TotalImpuesto total = new TotalImpuesto();
 				total.setCantidadAProcesar(line.readInt(1));
 				total.setTotal(line.readDouble(2));
+				total.setComprobante(comprobante);
+				
 				comprobante.setTotalImpuesto(total);
 				
 			} else if (prefix.equals("92")) { //Cierre del Comprador
