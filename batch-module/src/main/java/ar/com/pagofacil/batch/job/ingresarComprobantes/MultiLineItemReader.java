@@ -1,4 +1,4 @@
-package ar.com.pagofacil.batch;
+package ar.com.pagofacil.batch.job.ingresarComprobantes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +35,8 @@ public class MultiLineItemReader implements ItemReader<Vendedor>, ItemStream {
 		List<Comprador> compradores = new ArrayList<Comprador>();
 		
 		for (FieldSet line; (line = this.delegate.read()) != null;) {
+			int fieldCount = line.getFieldCount();
+			
 			String prefix = line.readString(0);
 			if (prefix.equals("01")) { //Vendedor
 				vendedor = new Vendedor(); // Record must start with '01'
@@ -96,20 +98,23 @@ public class MultiLineItemReader implements ItemReader<Vendedor>, ItemStream {
 				comprobante.setComprador(comprador);
 				
 			} else if (prefix.equals("05")) { //Jurisdiccion
-				Jurisdiccion jurisdiccion = new Jurisdiccion();
-				jurisdiccion.setSecuencia(line.readInt(1));
-				jurisdiccion.setCantidad(line.readDouble(2));
-				jurisdiccion.setPrecioUnitario(line.readDouble(3));
-				jurisdiccion.setUnidadMedida(line.readString(4));
-				jurisdiccion.setDescripcion(line.readString(5));
-				jurisdiccion.setImporteBase(line.readDouble(6));
-		
-				Comprador comprador = getCompradorActual(compradores);
-				Comprobante comprobante = getComprobanteActual(comprador);
-				comprobante.getJurisdicciones().add(jurisdiccion);
-				
-				jurisdiccion.setComprobante(comprobante);
-				
+				if (fieldCount == 6) {
+					Jurisdiccion jurisdiccion = new Jurisdiccion();
+					jurisdiccion.setSecuencia(line.readInt(1));
+					jurisdiccion.setPrecioUnitario(line.readDouble(2));
+					jurisdiccion.setCantidad(line.readDouble(3));
+					jurisdiccion.setUnidadMedida(line.readString(4));
+					jurisdiccion.setDescripcion(line.readString(5));
+					jurisdiccion.setImporteBase(line.readDouble(6));
+					
+					Comprador comprador = getCompradorActual(compradores);
+					Comprobante comprobante = getComprobanteActual(comprador);
+					comprobante.getJurisdicciones().add(jurisdiccion);
+					
+					jurisdiccion.setComprobante(comprobante);
+				} else {
+					throw new Exception("Error de parseo de linea tipo 05, la linea debe contener 6 campos separados por ;");
+				}
 			} else if (prefix.equals("95")) { //Total Jurisdiccion
 				Comprador comprador = getCompradorActual(compradores);
 				Comprobante comprobante = getComprobanteActual(comprador);
