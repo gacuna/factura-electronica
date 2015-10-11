@@ -12,9 +12,9 @@
 
 	<properties>
 		<jdk.version>1.7</jdk.version>	
-		<springframework.version>3.2.2.RELEASE</springframework.version>
+		<springframework.version>4.1.2.RELEASE</springframework.version>
 		<springsecurity.version>4.0.2.RELEASE</springsecurity.version>
-		<hibernate.version>4.3.6.Final</hibernate.version>
+		<hibernate.version>4.3.7.Final</hibernate.version>
 		<oracle.connector.version>11.2.0.4.0</oracle.connector.version>
 	</properties>
 
@@ -88,7 +88,13 @@
             <artifactId>hibernate-core</artifactId>
             <version>${hibernate.version}</version>
         </dependency>
-        
+
+		<dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>${hibernate.version}</version>
+        </dependency>
+                
         <!-- jsr303 validation -->
         <dependency>
             <groupId>javax.validation</groupId>
