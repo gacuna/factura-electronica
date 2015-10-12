@@ -15,7 +15,7 @@ import org.hibernate.annotations.Parameter;
 
 @Entity
 @Table(name="Total_Jurisdiccion")
-public class TotalJurisdiccion implements Serializable {
+public class TotalJurisdiccion implements Serializable, Identificable {
 
 	private static final long serialVersionUID = -5173857795396388183L;
 	
@@ -33,6 +33,14 @@ public class TotalJurisdiccion implements Serializable {
 	@PrimaryKeyJoinColumn
 	private Comprobante comprobante;
 	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	public int getCantidadAProcesar() {
 		return cantidadAProcesar;
 	}

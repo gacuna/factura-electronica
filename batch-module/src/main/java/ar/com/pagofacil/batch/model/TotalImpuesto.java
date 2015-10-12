@@ -15,7 +15,7 @@ import org.hibernate.annotations.Parameter;
 
 @Entity
 @Table(name="Total_Impuesto")
-public class TotalImpuesto implements Serializable {
+public class TotalImpuesto implements Serializable, Identificable {
 	private static final long serialVersionUID = 2048653237000518526L;
 
 	@GenericGenerator(name = "generator", strategy = "foreign", parameters = @Parameter(name = "property", value = "comprobante"))

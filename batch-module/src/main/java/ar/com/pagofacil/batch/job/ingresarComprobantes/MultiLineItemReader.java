@@ -1,6 +1,5 @@
 package ar.com.pagofacil.batch.job.ingresarComprobantes;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.batch.item.ExecutionContext;
@@ -32,142 +31,187 @@ public class MultiLineItemReader implements ItemReader<Vendedor>, ItemStream {
 	@Override
 	public Vendedor read() throws Exception {
 		Vendedor vendedor = null;
-		List<Comprador> compradores = new ArrayList<Comprador>();
 		
 		for (FieldSet line; (line = this.delegate.read()) != null;) {
 			int fieldCount = line.getFieldCount();
 			
 			String prefix = line.readString(0);
+			
 			if (prefix.equals("01")) { //Vendedor
-				vendedor = new Vendedor(); // Record must start with '01'
-				vendedor.setCuit(line.readLong(1));
-				vendedor.setNombre(line.readString(2));
-				vendedor.setDomicilio(line.readString(3));
-				vendedor.setLocalidad(line.readString(4));
-				vendedor.setCodigoPostal(line.readString(5));
-				vendedor.setPais(line.readString(6));
+				if (fieldCount == 7) {
+					vendedor = new Vendedor(); // Record must start with '01'
+					vendedor.setCuit(line.readLong(1));
+					vendedor.setNombre(line.readString(2));
+					vendedor.setDomicilio(line.readString(3));
+					vendedor.setLocalidad(line.readString(4));
+					vendedor.setCodigoPostal(line.readString(5));
+					vendedor.setPais(line.readString(6));
+				} else {
+					vendedor = new Vendedor();
+					vendedor.setId(99L);
+				}
 			} else if (prefix.equals("02")) { //Comprador
-				Assert.notNull(vendedor, "No se definio un vendedor");
-				Comprador comprador = new Comprador();
 				
-				comprador.setCuit(line.readLong(1));
-				comprador.setRazonSocial(line.readString(2));
-				comprador.setDomicilio(line.readString(3));
-				comprador.setLocalidad(line.readString(4));
-				comprador.setTelefono(line.readString(5));
-				comprador.setCodigoPostal(line.readString(6));
-				comprador.setPais(line.readString(7));
-				comprador.setCategoriaAfip(line.readString(8));
-				comprador.setNumeroCliente(line.readLong(9));
-				comprador.setTipoEntidad(line.readChar(10));
-				comprador.setVendedor(vendedor);
+				if (vendedor.getId() == null && fieldCount == 11) {
+					Comprador comprador = new Comprador();
+					
+					comprador.setCuit(line.readLong(1));
+					comprador.setRazonSocial(line.readString(2));
+					comprador.setDomicilio(line.readString(3));
+					comprador.setLocalidad(line.readString(4));
+					comprador.setTelefono(line.readString(5));
+					comprador.setCodigoPostal(line.readString(6));
+					comprador.setPais(line.readString(7));
+					comprador.setCategoriaAfip(line.readString(8));
+					comprador.setNumeroCliente(line.readLong(9));
+					comprador.setTipoEntidad(line.readChar(10));
+					comprador.setVendedor(vendedor);
+					
+					vendedor.getCompradores().add(comprador);
+				} else {
+					Comprador comprador = new Comprador();
+					comprador.setId(99L);
+					vendedor.getCompradores().add(comprador);
+				}
 				
-				compradores.add(comprador);
 			} else if (prefix.equals("03")) { //Mails Comprador
-				Assert.notNull(vendedor, "No se definio un vendedor");
+				Comprador comprador = getCompradorActual(vendedor);
+	
+				String mail = "";
 				
-				Comprador comprador = getCompradorActual(compradores);
-				comprador.getMails().add(line.readString(1));
+				if (comprador.getId() == null && fieldCount == 2) {
+					mail = line.readString(1);
+				}
+				
+				comprador.getMails().add(mail);
 				
 			} else if (prefix.equals("04")) { //Comprobantes
-				Assert.notNull(vendedor, "No se definio un vendedor");
+				Comprador comprador = getCompradorActual(vendedor);
 				Comprobante comprobante = new Comprobante();
 				
-				comprobante.setIdInterno(line.readString(1));
-				comprobante.setPuntoVenta(line.readString(2));
-				comprobante.setTipoComprobante(line.readString(3));
-				comprobante.setLetraFactura(line.readChar(4));
-				comprobante.setFechaFactura(line.readString(5));
-				comprobante.setFechaVencimiento(line.readString(6));
-				comprobante.setCondicionPago(line.readString(7));
-				comprobante.setMoneda(line.readString(8));
-				comprobante.setTipoCambio(line.readDouble(9));
-				comprobante.setTotalComprobante(line.readDouble(10));
-				comprobante.setGravado(line.readDouble(10));
-				comprobante.setNoGravado(line.readDouble(11));
-				comprobante.setDescuento(line.readDouble(12));
-				comprobante.setMontoIVADF(line.readDouble(13));
-				comprobante.setPercepcionesIVA(line.readDouble(14));
-				comprobante.setPercepcionesIIBB(line.readDouble(15));
-				comprobante.setRedondeo(line.readDouble(16));
+				if (comprador.getId() == null && fieldCount == 18) {
+					comprobante.setIdInterno(line.readString(1));
+					comprobante.setPuntoVenta(line.readString(2));
+					comprobante.setTipoComprobante(line.readString(3));
+					comprobante.setLetraFactura(line.readChar(4));
+					comprobante.setFechaFactura(line.readString(5));
+					comprobante.setFechaVencimiento(line.readString(6));
+					comprobante.setCondicionPago(line.readString(7));
+					comprobante.setMoneda(line.readString(8));
+					comprobante.setTipoCambio(line.readDouble(9));
+					comprobante.setTotalComprobante(line.readDouble(10));
+					comprobante.setGravado(line.readDouble(10));
+					comprobante.setNoGravado(line.readDouble(11));
+					comprobante.setDescuento(line.readDouble(12));
+					comprobante.setMontoIVADF(line.readDouble(13));
+					comprobante.setPercepcionesIVA(line.readDouble(14));
+					comprobante.setPercepcionesIIBB(line.readDouble(15));
+					comprobante.setRedondeo(line.readDouble(16));
+				} else {
+					comprobante.setId(99L);
+				}
 
-				Comprador comprador = getCompradorActual(compradores);
-				
 				comprador.getComprobantes().add(comprobante);
-
 				comprobante.setComprador(comprador);
 				
 			} else if (prefix.equals("05")) { //Jurisdiccion
-				if (fieldCount == 6) {
-					Jurisdiccion jurisdiccion = new Jurisdiccion();
+
+				Comprador comprador = getCompradorActual(vendedor);
+				Comprobante comprobante = getComprobanteActual(comprador);
+				
+				Jurisdiccion jurisdiccion = new Jurisdiccion();
+				
+				if (comprobante.getId() == null && fieldCount == 7) {
 					jurisdiccion.setSecuencia(line.readInt(1));
 					jurisdiccion.setPrecioUnitario(line.readDouble(2));
 					jurisdiccion.setCantidad(line.readDouble(3));
 					jurisdiccion.setUnidadMedida(line.readString(4));
 					jurisdiccion.setDescripcion(line.readString(5));
 					jurisdiccion.setImporteBase(line.readDouble(6));
-					
-					Comprador comprador = getCompradorActual(compradores);
-					Comprobante comprobante = getComprobanteActual(comprador);
-					comprobante.getJurisdicciones().add(jurisdiccion);
-					
-					jurisdiccion.setComprobante(comprobante);
 				} else {
-					throw new Exception("Error de parseo de linea tipo 05, la linea debe contener 6 campos separados por ;");
+					jurisdiccion.setId(99L);
 				}
-			} else if (prefix.equals("95")) { //Total Jurisdiccion
-				Comprador comprador = getCompradorActual(compradores);
-				Comprobante comprobante = getComprobanteActual(comprador);
 				
+				jurisdiccion.setComprobante(comprobante);
+				comprobante.getJurisdicciones().add(jurisdiccion);
+				
+			} else if (prefix.equals("95")) { //Total Jurisdiccion
+				
+				Comprador comprador = getCompradorActual(vendedor);
+				Comprobante comprobante = getComprobanteActual(comprador);
+
 				TotalJurisdiccion total = new TotalJurisdiccion();
-				total.setCantidadAProcesar(line.readInt(1));
-				total.setTotal(line.readDouble(2));
-				total.setComprobante(comprobante);
+				
+				if (comprobante.getId() == null && fieldCount == 3) {
+					total.setCantidadAProcesar(line.readInt(1));
+					total.setTotal(line.readDouble(2));
+					total.setComprobante(comprobante);
+				} else {
+					total.setId(99L);
+				}
 				
 				comprobante.setTotalJurisdiccion(total);
 				
 			} else if (prefix.equals("06")) { //Impuesto
-				Impuesto impuesto = new Impuesto();
-				
-				impuesto.setCodigo(line.readString(1));
-				impuesto.setDescripcion(line.readString(2));
-				impuesto.setAlicuota(line.readDouble(3));
-				impuesto.setCodigoAfip(line.readString(4));
-				impuesto.setMonto(line.readDouble(5));
-				impuesto.setMontoBase(line.readDouble(6));
-
-				Comprador comprador = getCompradorActual(compradores);
+				Comprador comprador = getCompradorActual(vendedor);
 				Comprobante comprobante = getComprobanteActual(comprador);
-				comprobante.getImpuestos().add(impuesto);
+
+				Impuesto impuesto = new Impuesto();
+
+				if (comprobante.getId() == null && fieldCount == 7) {
+					impuesto.setCodigo(line.readString(1));
+					impuesto.setDescripcion(line.readString(2));
+					impuesto.setAlicuota(line.readDouble(3));
+					impuesto.setCodigoAfip(line.readString(4));
+					impuesto.setMonto(line.readDouble(5));
+					impuesto.setMontoBase(line.readDouble(6));
+				} else {
+					impuesto.setId(99L);
+				}
 				
+				comprobante.getImpuestos().add(impuesto);
 				impuesto.setComprobante(comprobante);
 				
 			} else if (prefix.equals("96")) { //Total Impuesto
-				Comprador comprador = getCompradorActual(compradores);
+				Comprador comprador = getCompradorActual(vendedor);
 				Comprobante comprobante = getComprobanteActual(comprador);
 				
 				TotalImpuesto total = new TotalImpuesto();
-				total.setCantidadAProcesar(line.readInt(1));
-				total.setTotal(line.readDouble(2));
+
+				if (comprobante.getId() == null && fieldCount == 3) {
+					total.setCantidadAProcesar(line.readInt(1));
+					total.setTotal(line.readDouble(2));
+				} else {
+					total.setId(99L);
+				}
+
 				total.setComprobante(comprobante);
-				
 				comprobante.setTotalImpuesto(total);
 				
 			} else if (prefix.equals("92")) { //Cierre del Comprador
-				Assert.notNull(vendedor, "No se definio un vendedor");
 
-				Comprador comprador = getCompradorActual(compradores);
-				
-				comprador.setCantidadMailsAProcesar(line.readInt(2));
-				comprador.setCantidadComprobantesAProcesar(line.readInt(3));
+				Comprador comprador = getCompradorActual(vendedor);
+
+				if (comprador.getId() == null && fieldCount == 4) {
+					comprador.setCantidadMailsAProcesar(line.readInt(2));
+					comprador.setCantidadComprobantesAProcesar(line.readInt(3));
+				} else { //Si hay un error en la linea de totales del comprador no se cancela
+					comprador.setCantidadMailsAProcesar(-1);
+					comprador.setCantidadComprobantesAProcesar(-1);
+				}
 				
 			} else if (prefix.equals("91")) { //Cierre del vendedor
-				Assert.notNull(vendedor, "No se definio un vendedor");
-				vendedor.setCantidadCompradores(Integer.valueOf(line.readInt(2)));
-				vendedor.setCompradores(compradores);
-				return vendedor; // Record must end with 'FOT'
+				
+				if (vendedor.getId() == null && fieldCount == 3) {
+					vendedor.setCantidadCompradores(line.readInt(2));
+				} else {
+					vendedor.setCantidadCompradores(-1);
+				}
+				
+				return vendedor;
 			}
 		}
+		
 		Assert.isNull(vendedor, "No '01' was found.");
 		return null;
 	}
@@ -180,7 +224,8 @@ public class MultiLineItemReader implements ItemReader<Vendedor>, ItemStream {
 		return null;
 	}
 
-	private Comprador getCompradorActual(List<Comprador> compradores) {
+	private Comprador getCompradorActual(Vendedor vendedor) {
+		List<Comprador> compradores = vendedor.getCompradores();
 		if (!compradores.isEmpty())
 			return compradores.get(compradores.size() - 1);
 		

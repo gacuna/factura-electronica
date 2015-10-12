@@ -15,7 +15,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="Vendedor")
-public class Vendedor implements Serializable {
+public class Vendedor implements Serializable, Identificable {
 	
 	private static final long serialVersionUID = 3485112577323297821L;
 	
@@ -40,6 +40,14 @@ public class Vendedor implements Serializable {
 	
 	@OneToMany(mappedBy="vendedor", cascade=CascadeType.ALL)
 	private List<Comprador> compradores = new ArrayList<Comprador>();
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public Long getCuit() {
 		return cuit;

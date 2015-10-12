@@ -15,11 +15,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 @Entity
 @Table(name="Comprobante")
-public class Comprobante implements Serializable {
+public class Comprobante implements Serializable, Identificable {
 
 	private static final long serialVersionUID = 2115214912257474433L;
 

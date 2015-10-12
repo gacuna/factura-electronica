@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 @Entity
 @Table(name="Comprador")
-public class Comprador implements Serializable {
+public class Comprador implements Serializable, Identificable {
 
 	private static final long serialVersionUID = 3645141440589838268L;
 
@@ -61,7 +61,15 @@ public class Comprador implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="vendedor_id")
 	private Vendedor vendedor;
-	
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	public Long getCuit() {
 		return cuit;
 	}

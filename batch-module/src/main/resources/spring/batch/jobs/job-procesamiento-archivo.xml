@@ -18,8 +18,7 @@
 	<batch:job id="procearArchivoJob">
 		<batch:step id="step1">
 			<batch:tasklet>
-				<batch:chunk reader="csvFileItemReader" writer="dbWriter" commit-interval="1"/>
-<!-- 				<batch:chunk reader="csvFileItemReader" writer="xmlItemWriter" processor="itemProcessor" commit-interval="10"/> -->
+				<batch:chunk reader="csvFileItemReader" writer="dbWriter" processor="itemProcessor" commit-interval="10"/>
 			</batch:tasklet>
 		</batch:step>
 	</batch:job>
