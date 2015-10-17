@@ -30,6 +30,8 @@
                 <value>ar.com.pagofacil.batch.model.Impuesto</value>
                 <value>ar.com.pagofacil.batch.model.TotalJurisdiccion</value>
                 <value>ar.com.pagofacil.batch.model.TotalImpuesto</value>
+                <value>ar.com.pagofacil.batch.model.RegistroErrores</value>
+                <value>ar.com.pagofacil.batch.model.RegistroAfectado</value>
             </list>
         </property>
         <property name="hibernateProperties">
@@ -46,5 +48,6 @@
 		<jdbc:script location="org/springframework/batch/core/schema-drop-mysql.sql" />
 		<jdbc:script location="org/springframework/batch/core/schema-mysql.sql" />
 	</jdbc:initialize-database>
+	
 	
 </beans>

@@ -7,6 +7,8 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,7 +20,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="Comprobante")
-public class Comprobante implements Serializable, Identificable {
+public class Comprobante extends AbstractTextLine implements Serializable {
 
 	private static final long serialVersionUID = 2115214912257474433L;
 
@@ -76,6 +78,9 @@ public class Comprobante implements Serializable, Identificable {
 	@ManyToOne
 	@JoinColumn(name="comprador_id")
 	private Comprador comprador;
+	
+	@Enumerated(EnumType.STRING)
+	private EstadoComprobante estado;
 	
 	public Long getId() {
 		return id;
@@ -259,6 +264,14 @@ public class Comprobante implements Serializable, Identificable {
 
 	public void setComprador(Comprador comprador) {
 		this.comprador = comprador;
+	}
+
+	public EstadoComprobante getEstado() {
+		return estado;
+	}
+
+	public void setEstado(EstadoComprobante estado) {
+		this.estado = estado;
 	}
 
 }

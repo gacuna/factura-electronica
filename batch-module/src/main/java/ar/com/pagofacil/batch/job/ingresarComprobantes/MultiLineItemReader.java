@@ -1,5 +1,6 @@
 package ar.com.pagofacil.batch.job.ingresarComprobantes;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.batch.item.ExecutionContext;
@@ -12,6 +13,7 @@ import org.springframework.util.Assert;
 
 import ar.com.pagofacil.batch.model.Comprador;
 import ar.com.pagofacil.batch.model.Comprobante;
+import ar.com.pagofacil.batch.model.EstadoComprobante;
 import ar.com.pagofacil.batch.model.Impuesto;
 import ar.com.pagofacil.batch.model.Jurisdiccion;
 import ar.com.pagofacil.batch.model.TotalImpuesto;
@@ -49,6 +51,7 @@ public class MultiLineItemReader implements ItemReader<Vendedor>, ItemStream {
 				} else {
 					vendedor = new Vendedor();
 					vendedor.setId(99L);
+					vendedor.setLine(Arrays.toString(line.getValues()));
 				}
 			} else if (prefix.equals("02")) { //Comprador
 				
@@ -71,6 +74,7 @@ public class MultiLineItemReader implements ItemReader<Vendedor>, ItemStream {
 				} else {
 					Comprador comprador = new Comprador();
 					comprador.setId(99L);
+					comprador.setLine(Arrays.toString(line.getValues()));
 					vendedor.getCompradores().add(comprador);
 				}
 				
@@ -107,7 +111,10 @@ public class MultiLineItemReader implements ItemReader<Vendedor>, ItemStream {
 					comprobante.setPercepcionesIVA(line.readDouble(14));
 					comprobante.setPercepcionesIIBB(line.readDouble(15));
 					comprobante.setRedondeo(line.readDouble(16));
+					comprobante.setEstado(EstadoComprobante.PENDIENTE_PROCESO);
 				} else {
+					comprobante.setEstado(EstadoComprobante.ERROR_IMPORTACION);
+					comprobante.setLine(Arrays.toString(line.getValues()));
 					comprobante.setId(99L);
 				}
 
@@ -129,6 +136,7 @@ public class MultiLineItemReader implements ItemReader<Vendedor>, ItemStream {
 					jurisdiccion.setDescripcion(line.readString(5));
 					jurisdiccion.setImporteBase(line.readDouble(6));
 				} else {
+					jurisdiccion.setLine(Arrays.toString(line.getValues()));
 					jurisdiccion.setId(99L);
 				}
 				
@@ -147,6 +155,7 @@ public class MultiLineItemReader implements ItemReader<Vendedor>, ItemStream {
 					total.setTotal(line.readDouble(2));
 					total.setComprobante(comprobante);
 				} else {
+					total.setLine(Arrays.toString(line.getValues()));
 					total.setId(99L);
 				}
 				
@@ -166,6 +175,7 @@ public class MultiLineItemReader implements ItemReader<Vendedor>, ItemStream {
 					impuesto.setMonto(line.readDouble(5));
 					impuesto.setMontoBase(line.readDouble(6));
 				} else {
+					impuesto.setLine(Arrays.toString(line.getValues()));
 					impuesto.setId(99L);
 				}
 				
@@ -182,6 +192,7 @@ public class MultiLineItemReader implements ItemReader<Vendedor>, ItemStream {
 					total.setCantidadAProcesar(line.readInt(1));
 					total.setTotal(line.readDouble(2));
 				} else {
+					total.setLine(Arrays.toString(line.getValues()));
 					total.setId(99L);
 				}
 

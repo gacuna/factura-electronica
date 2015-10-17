@@ -15,7 +15,7 @@ import org.hibernate.annotations.Parameter;
 
 @Entity
 @Table(name="Total_Jurisdiccion")
-public class TotalJurisdiccion implements Serializable, Identificable {
+public class TotalJurisdiccion extends AbstractTextLine implements Serializable {
 
 	private static final long serialVersionUID = -5173857795396388183L;
 	

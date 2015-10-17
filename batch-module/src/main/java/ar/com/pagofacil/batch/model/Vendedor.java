@@ -15,7 +15,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="Vendedor")
-public class Vendedor implements Serializable, Identificable {
+public class Vendedor extends AbstractTextLine implements Serializable {
 	
 	private static final long serialVersionUID = 3485112577323297821L;
 	

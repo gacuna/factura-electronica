@@ -13,7 +13,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="Impuesto")
-public class Impuesto implements Serializable, Identificable {
+public class Impuesto extends AbstractTextLine implements Serializable {
 
 	private static final long serialVersionUID = 6328938926201079568L;
 

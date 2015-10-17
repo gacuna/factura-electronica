@@ -1,5 +1,6 @@
 package ar.com.pagofacil.batch.job.ingresarComprobantes;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -7,20 +8,29 @@ import org.apache.commons.collections.Predicate;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
+import ar.com.pagofacil.batch.model.AbstractTextLine;
 import ar.com.pagofacil.batch.model.Comprador;
 import ar.com.pagofacil.batch.model.Comprobante;
 import ar.com.pagofacil.batch.model.Identificable;
+import ar.com.pagofacil.batch.model.RegistroErrores;
 import ar.com.pagofacil.batch.model.Vendedor;
 
 @Component(value="itemProcessor")
-public class CustomItemProcessor implements ItemProcessor<Identificable, Vendedor> {
+public class CustomItemProcessor implements ItemProcessor<AbstractTextLine, AbstractTextLine> {
 
-	public Vendedor process(Identificable item) throws Exception {
+	public AbstractTextLine process(AbstractTextLine item) throws Exception {
 		Vendedor vendedor = (Vendedor) item;
 		
 		if (vendedor.getId() != null) {
 			System.out.println("Skiping..." + vendedor);
-			return null;
+			RegistroErrores registroError = new RegistroErrores();
+			registroError.setIdProceso(1L);
+			registroError.setLinea(vendedor.getLine());
+			registroError.setCausa("Error formato de linea");
+			registroError.setFechaHora(new Timestamp(System.currentTimeMillis()));
+			registroError.addEntidadAfectada(vendedor);
+			//TODO Recorrer todos los hijos y crear una entidad afectada
+			return registroError;
 		} else {
 			//Validar cada Comprador/Comprobante/(Impuesto|Juridiccion|Totales)
 
@@ -31,6 +41,7 @@ public class CustomItemProcessor implements ItemProcessor<Identificable, Vendedo
 			//Si el vendedor no tiene ningun comprador asociado hay que anularlo para que no lo persista
 			if (compradores.isEmpty()) {
 				System.out.println("Skiping..." + vendedor.getNombre());
+				//TODO Loguear en una tabla de registros rechazados
 				return null;
 			} else {
 				for(Comprador comprador : compradores) {
@@ -98,10 +109,10 @@ public class CustomItemProcessor implements ItemProcessor<Identificable, Vendedo
 	}
 	
 	/**
-	 * Filtra los compradores que tienen asignado un Identificador los cuales
+	 * Filtra las entidades que tienen asignado un Identificador los cuales
 	 * fueron marcados en el proceso de lectura del archivo como invalidos.
 	 * 
-	 * @param compradores
+	 * @param entities
 	 */
 	private static void filtrarObjectosInvalidos(List<? extends Identificable> entities) {
 		CollectionUtils.filter(entities, new Predicate() {

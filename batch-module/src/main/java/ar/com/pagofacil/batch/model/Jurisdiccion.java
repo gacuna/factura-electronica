@@ -13,7 +13,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="Jurisdiccion")
-public class Jurisdiccion implements Serializable, Identificable {
+public class Jurisdiccion extends AbstractTextLine implements Serializable {
 
 	private static final long serialVersionUID = -2067188594696302598L;
 

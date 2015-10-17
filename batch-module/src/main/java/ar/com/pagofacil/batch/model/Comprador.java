@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 @Entity
 @Table(name="Comprador")
-public class Comprador implements Serializable, Identificable {
+public class Comprador extends AbstractTextLine implements Serializable {
 
 	private static final long serialVersionUID = 3645141440589838268L;
 
